@@ -38,7 +38,7 @@ func NewAccess(h HookHandlers) (Access, error) {
 }
 
 func MetaEnv(obj interface{}, key string) (string, error) {
-	conf, ok := obj.(config)
+	conf, ok := obj.(*config)
 	if ok && conf.container != nil {
 		if val, ok := conf.container.Env[key]; ok {
 			return val, nil
