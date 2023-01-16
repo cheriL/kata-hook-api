@@ -1,12 +1,11 @@
 package kata_hook_api
 
 import (
-	"context"
 	"flag"
 	"fmt"
 )
 
-type InitFunc func(context.Context, interface{}) error
+//type InitFunc func(context.Context, interface{}) error
 
 type Access interface {
 	Execute() error
@@ -40,10 +39,23 @@ func NewAccess(h HookHandlers) (Access, error) {
 func MetaEnv(obj interface{}, key string) (string, error) {
 	conf, ok := obj.(*config)
 	if ok && conf.container != nil {
-		if val, ok := conf.container.Env[key]; ok {
+		if val, ok := conf.container.Envs[key]; ok {
 			return val, nil
 		} else {
 			return "", fmt.Errorf("env not found: %s", key)
+		}
+	}
+
+	return "", fmt.Errorf("object has no meta")
+}
+
+func MetaAnnotation(obj interface{}, key string) (string, error) {
+	conf, ok := obj.(*config)
+	if ok && conf.container != nil {
+		if val, ok := conf.container.Annotations[key]; ok {
+			return val, nil
+		} else {
+			return "", fmt.Errorf("annotation not found: %s", key)
 		}
 	}
 
