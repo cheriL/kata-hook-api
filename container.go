@@ -3,18 +3,20 @@ package kata_hook_api
 import (
 	"encoding/json"
 	"fmt"
-	spec "github.com/opencontainers/runtime-spec/specs-go"
 	"log"
 	"os"
 	"path"
 	"strings"
+
+	spec "github.com/opencontainers/runtime-spec/specs-go"
 )
 
 type containerConfig struct {
-	version string
-	Pid     int
-	Rootfs  string
-	Env     map[string]string
+	version     string
+	Pid         int
+	Rootfs      string
+	Envs        map[string]string
+	Annotations map[string]string
 }
 
 func loadContainerSpec() (*containerConfig, error) {
@@ -49,11 +51,17 @@ func loadContainerSpec() (*containerConfig, error) {
 		return nil, err
 	}
 
+	annotations := make(map[string]string)
+	for k, v := range spec.Annotations {
+		annotations[k] = v
+	}
+
 	return &containerConfig{
-		version: spec.Version,
-		Pid:     state.Pid,
-		Rootfs:  spec.Root.Path,
-		Env:     env,
+		version:     spec.Version,
+		Pid:         state.Pid,
+		Rootfs:      spec.Root.Path,
+		Envs:        env,
+		Annotations: annotations,
 	}, nil
 }
 
